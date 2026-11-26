@@ -8,9 +8,18 @@ A **zero-dependency, 24-bit TrueColor Python terminal pixel-art animation** that
 
 Inspired by procedural terminal pixel-art animations like *How Code Thinks*, built cleanly with a layered 2D sub-pixel buffer (`116 × 36` cells) so it runs smoothly inside **Antigravity IDE**, **VS Code**, **Windows Terminal**, **iTerm2**, or any modern terminal without opening a browser.
 
+<p align="center">
+  <img src="docs/preview.gif" alt="Cozy Christmas Living Room — Full Cozy Evening &amp; Midnight Hearth Glow" width="760">
+</p>
+
+<details>
+<summary>Static Previews — Full Cozy Evening &amp; Midnight Hearth Glow</summary>
+
 | Full Cozy Evening (`lights_on = True`) | Midnight Hearth Glow (`[L]` Lights Off) |
 | :---: | :---: |
 | ![Cozy Christmas Living Room Lit](docs/preview-lit.png) | ![Cozy Christmas Living Room Hearth Glow](docs/preview-hearth.png) |
+
+</details>
 
 ---
 
@@ -62,6 +71,7 @@ cozy-christmas-living-room/
 ├── .github/workflows/
 │   └── tests.yml        # GitHub Actions CI matrix (Ubuntu & Windows, Python 3.10 / 3.12)
 ├── docs/
+│   ├── preview.gif
 │   ├── preview-lit.png
 │   └── preview-hearth.png
 ├── christmas.py         # CLI entrypoint
