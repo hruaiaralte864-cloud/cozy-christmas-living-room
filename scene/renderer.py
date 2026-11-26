@@ -8,6 +8,8 @@ import shutil
 import sys
 import time
 
+from dataclasses import dataclass
+
 from .canvas import Canvas, CellSnapshot, enable_windows_ansi
 from .fireplace import Fireplace
 from .furnishings import draw_wall_decorations
@@ -76,6 +78,49 @@ class _KeyReader:
         except Exception:
             return None
         return None
+
+
+@dataclass(slots=True)
+class _PlaybackState:
+    """Shared intro timing and interactive control state for terminal and GUI loops."""
+
+    start_time: float
+    intro_start: float
+    in_intro: bool
+    intro_duration: float
+
+    @classmethod
+    def create(cls, now: float, skip_intro: bool, intro_speed: float) -> "_PlaybackState":
+        return cls(
+            start_time=now,
+            intro_start=now,
+            in_intro=not skip_intro,
+            intro_duration=6.8 / intro_speed,
+        )
+
+    def advance(self, now: float) -> tuple[float, float | None]:
+        """Return (simulation_t, intro_elapsed_or_none) and retire intro when finished."""
+        t = now - self.start_time
+        if not self.in_intro:
+            return t, None
+        elapsed = now - self.intro_start
+        if elapsed >= self.intro_duration:
+            self.in_intro = False
+            return t, None
+        return t, elapsed
+
+    def handle_key(self, key: str | None, now: float, renderer: "LivingRoomRenderer") -> bool:
+        """Apply an interactive control key; return True when playback should exit."""
+        if key in ("q", "\x03", "escape"):
+            return True
+        if key == "l":
+            renderer.lights_on = not renderer.lights_on
+        elif key == "r":
+            self.intro_start = now
+            self.in_intro = True
+        elif key in (" ", "\r", "\n") and self.in_intro:
+            self.in_intro = False
+        return False
 
 
 class LivingRoomRenderer:
@@ -221,15 +266,12 @@ class LivingRoomRenderer:
         if not self.skip_intro:
             self.warmup()
         frame_dt = 1.0 / self.fps
-        intro_duration = 6.8 / self.intro_speed
 
         # Enter alternate screen buffer, hide cursor, and clear once
         sys.stdout.write("\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H")
         sys.stdout.flush()
 
-        start_time = time.monotonic()
-        intro_start = start_time
-        in_intro = not self.skip_intro
+        state = _PlaybackState.create(time.monotonic(), self.skip_intro, self.intro_speed)
         prev_cells: CellSnapshot | None = None
         prev_geom: tuple[int, int, int, int] | None = None
 
@@ -237,25 +279,9 @@ class LivingRoomRenderer:
             with _KeyReader() as keys:
                 while True:
                     now = time.monotonic()
-                    t = now - start_time
-                    intro_elapsed: float | None = None
-                    if in_intro:
-                        elapsed = now - intro_start
-                        if elapsed >= intro_duration:
-                            in_intro = False
-                        else:
-                            intro_elapsed = elapsed
-
-                    key = keys.read_key()
-                    if key in ("q", "\x03"):
+                    if state.handle_key(keys.read_key(), now, self):
                         break
-                    if key == "l":
-                        self.lights_on = not self.lights_on
-                    elif key == "r":
-                        intro_start = now
-                        in_intro = True
-                    elif key in (" ", "\r", "\n") and in_intro:
-                        in_intro = False
+                    t, intro_elapsed = state.advance(now)
 
                     term_w, term_h = shutil.get_terminal_size((self.WIDTH, self.HEIGHT))
                     self.render_frame(t=t, intro_elapsed=intro_elapsed, terminal_size=(term_w, term_h))
@@ -289,3 +315,9 @@ class LivingRoomRenderer:
         finally:
             sys.stdout.write("\x1b[0m\x1b[?25h\x1b[?1049l")
             sys.stdout.flush()
+
+    def run_gui(self) -> int:
+        """Launch the interactive animation inside a standalone Tkinter window."""
+        from .gui import run_gui
+
+        return run_gui(self)

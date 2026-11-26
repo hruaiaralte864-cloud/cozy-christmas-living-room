@@ -12,7 +12,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command-line options for running or previewing the scene."""
     parser = argparse.ArgumentParser(
         prog="cozy-christmas-living-room",
-        description="Animated 24-bit TrueColor pixel-art Christmas living room for your terminal.",
+        description="Animated 24-bit TrueColor pixel-art Christmas living room for your terminal or desktop window.",
     )
     parser.add_argument(
         "--fps",
@@ -41,11 +41,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="With --static, print plain ASCII characters without ANSI color codes.",
     )
+    parser.add_argument(
+        "--gui",
+        action="store_true",
+        help="Open the animation in a standalone Tkinter desktop window instead of the terminal.",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the terminal animation or print a static snapshot."""
+    """Run the terminal animation, open the Tkinter GUI window, or print a static snapshot."""
     args = parse_args(argv)
     renderer = LivingRoomRenderer(
         fps=args.fps,
@@ -62,6 +67,9 @@ def main(argv: list[str] | None = None) -> int:
             sys.stdout.write(canvas.to_ansi().replace("\x1b[H", "") + "\n")
             sys.stdout.flush()
         return 0
+
+    if args.gui:
+        return renderer.run_gui()
 
     renderer.run()
     return 0

@@ -25,8 +25,9 @@ Inspired by procedural terminal pixel-art animations like *How Code Thinks*, bui
 
 ## Features
 
-- **Zero External Dependencies:** Pure Python 3 standard library (`ctypes`, `math`, `random`, `shutil`, `time`). Nothing to `pip install`.
-- **24-Bit TrueColor Synchronized Diff Rendering:** DEC synchronized diff updates (`\x1b[?2026h` / `to_ansi_diff`) for smooth, tear-free `30 FPS` animation.
+- **Zero External Dependencies:** Pure Python 3 standard library (`ctypes`, `math`, `random`, `shutil`, `time`, `tkinter`). Nothing to `pip install`.
+- **24-Bit TrueColor Synchronized Diff Rendering:** DEC synchronized diff updates (`\x1b[?2026h` / `to_ansi_diff`) for smooth, tear-free `30 FPS` terminal animation.
+- **Optional Standalone Desktop Window (`--gui` / `christmas_gui.py`):** Open the same animated scene in a resizable, DPI-aware Tkinter desktop window with dirty-row pixel updates.
 - **Twilight-to-Cozy Awakening Intro:** Watches the room construct smoothly (twilight walls, perspective planks & Kilim rug → frosted window, bookcase & brick fireplace → ignition radial hearth glow → cascading evergreen pine tree → garlands, ornaments, ceiling lights & 5-point star → settled wrapped presents) before entering the cozy live loop.
 - **Full Living Room Diorama:**
   - **Left:** Brick fireplace with keystone arch, hanging wreath, Little Drummer Boy figurine, winter snowglobe, pinecone swag, Fair Isle stockings, rising embers, and expanding warm hearth light.
@@ -36,7 +37,7 @@ Inspired by procedural terminal pixel-art animations like *How Code Thinks*, bui
   - `L` — Toggle room & holiday lights (`lights_on`) while keeping the hearth fireplace burning
   - `R` — Replay the build-up animation
   - `Space` / `Enter` — Skip the intro
-  - `Q` or `Ctrl+C` — Quit cleanly
+  - `Q`, `Esc` *(GUI)*, or `Ctrl+C` — Quit cleanly
 
 ---
 
@@ -52,9 +53,11 @@ python christmas.py
 
 > **Tip for IDE Terminals (Antigravity / VS Code):** Maximize the terminal panel (or ensure it is at least `116 × 36` characters) for the full unclipped living room view.
 
-### CLI Options
+### Launch & CLI Options
 
 ```bash
+python christmas_gui.py               # One-click standalone Tkinter desktop window
+python christmas.py --gui             # Same desktop window via the main CLI entrypoint
 python christmas.py --no-intro        # Jump straight into the cozy animated loop
 python christmas.py --speed 2.0       # Play the build-up animation 2x faster
 python christmas.py --fps 24          # Adjust frame rate (default: 30)
@@ -75,6 +78,7 @@ cozy-christmas-living-room/
 │   ├── preview-lit.png
 │   └── preview-hearth.png
 ├── christmas.py         # CLI entrypoint
+├── christmas_gui.py     # One-click Tkinter desktop window launcher
 ├── scene/
 │   ├── canvas.py        # 2D TrueColor half-block sub-pixel buffer & Windows VT100 support
 │   ├── palette.py       # Festive RGB color palette, interpolation & hash utilities
@@ -84,9 +88,10 @@ cozy-christmas-living-room/
 │   ├── window.py        # Twilight alpine scene, crescent moon & time-based falling snow
 │   ├── tree.py          # 5-tier evergreen pine tree, garlands, baubles, lights & star
 │   ├── presents.py      # 9 3D wrapped gift boxes with patterns, ribbons, tags & bows
+│   ├── gui.py           # Optional standalone Tkinter desktop window viewer (--gui)
 │   └── renderer.py      # Twilight-to-Cozy Awakening intro & 30 FPS diff loop
 ├── tests/
-│   └── test_scene.py    # Unit tests for canvas, build stages, idempotency & CLI parsing
+│   └── test_scene.py    # Unit tests for canvas, build stages, GUI, idempotency & CLI parsing
 ├── LICENSE              # MIT License
 └── README.md
 ```

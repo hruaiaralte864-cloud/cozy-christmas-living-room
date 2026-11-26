@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import sys
 from dataclasses import dataclass
+from itertools import chain
 
 from .palette import RGB, WALL_BG
 
@@ -385,3 +386,25 @@ class Canvas:
 
         out.append("\x1b[0m")
         return "".join(out)
+
+    def to_ppm_rows(self) -> list[bytes]:
+        """Serialize the 2x-vertical sub-pixel buffer into raw RGB byte rows."""
+        rows: list[bytes] = []
+        for y in range(self.height):
+            for px_row in (self._top_px[y], self._bot_px[y]):
+                rows.append(bytes(chain.from_iterable(px_row)))
+        return rows
+
+    def to_ppm_bytes(self) -> bytes:
+        """Serialize the full sub-pixel buffer as a binary P6 PPM image."""
+        header = f"P6\n{self.width} {self.px_height}\n255\n".encode("ascii")
+        return header + b"".join(self.to_ppm_rows())
+
+    def overlay_glyphs(self) -> list[tuple[int, int, str, RGB, bool]]:
+        """Return (x, y, char, fg, bold) tuples for non-block glyph cells."""
+        glyphs: list[tuple[int, int, str, RGB, bool]] = []
+        for y, row in enumerate(self._grid):
+            for x, cell in enumerate(row):
+                if cell.char not in (" ", "▀"):
+                    glyphs.append((x, y, cell.char, cell.fg, cell.bold))
+        return glyphs

@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import unittest
 import unicodedata
+from unittest.mock import patch
 
+import christmas_gui
 from christmas import parse_args
 from scene.canvas import Canvas
+from scene.gui import LivingRoomWindow, compute_scale, dirty_row_span, rgb_to_hex
 from scene.presents import DEFAULT_PRESENTS
-from scene.renderer import LivingRoomRenderer
+from scene.renderer import LivingRoomRenderer, _PlaybackState
 
 
 class TestLivingRoomScene(unittest.TestCase):
@@ -121,13 +124,19 @@ class TestLivingRoomScene(unittest.TestCase):
     def test_lights_toggle_and_cli_args(self) -> None:
         defaults = parse_args([])
         self.assertEqual(defaults.fps, 30.0)
+        self.assertFalse(defaults.gui)
 
-        args = parse_args(["--static", "--plain", "--no-intro", "--fps", "24", "--speed", "2.0"])
+        args = parse_args(["--static", "--plain", "--no-intro", "--gui", "--fps", "24", "--speed", "2.0"])
         self.assertTrue(args.static)
         self.assertTrue(args.plain)
         self.assertTrue(args.no_intro)
+        self.assertTrue(args.gui)
         self.assertEqual(args.fps, 24.0)
         self.assertEqual(args.speed, 2.0)
+
+        with patch("christmas_gui.cli_main", return_value=0) as mock_cli:
+            self.assertEqual(christmas_gui.main(["--no-intro", "--fps", "24"]), 0)
+            mock_cli.assert_called_once_with(["--gui", "--no-intro", "--fps", "24"])
 
         renderer = LivingRoomRenderer()
         renderer.lights_on = False
@@ -153,6 +162,78 @@ class TestLivingRoomScene(unittest.TestCase):
         first = renderer.render_frame(t=1.25, intro_elapsed=None).to_ansi(plain=True)
         second = renderer.render_frame(t=1.25, intro_elapsed=None).to_ansi(plain=True)
         self.assertEqual(first, second)
+
+    def test_ppm_serialization_and_overlay_glyphs(self) -> None:
+        canvas = Canvas(width=3, height=2, default_bg=(1, 2, 3))
+        canvas.set_px(0, 0, (10, 20, 30))
+        canvas.set_px(0, 1, (40, 50, 60))
+        canvas.put(2, 1, "*", (255, 220, 90), bg=(7, 8, 9), bold=True)
+
+        rows = canvas.to_ppm_rows()
+        self.assertEqual(len(rows), 4)
+        self.assertEqual(rows[0][:3], bytes((10, 20, 30)))
+        self.assertEqual(rows[1][:3], bytes((40, 50, 60)))
+        self.assertEqual(rows[2][6:9], bytes((7, 8, 9)))
+        self.assertEqual(rows[3][6:9], bytes((7, 8, 9)))
+
+        ppm = canvas.to_ppm_bytes()
+        self.assertTrue(ppm.startswith(b"P6\n3 4\n255\n"))
+        self.assertEqual(len(ppm), len(b"P6\n3 4\n255\n") + 3 * 4 * 3)
+
+        self.assertEqual(canvas.overlay_glyphs(), [(2, 1, "*", (255, 220, 90), True)])
+
+    def test_playback_state_controls(self) -> None:
+        renderer = LivingRoomRenderer(intro_speed=2.0)
+        state = _PlaybackState.create(now=10.0, skip_intro=False, intro_speed=2.0)
+        t0, intro0 = state.advance(11.0)
+        self.assertAlmostEqual(t0, 1.0)
+        self.assertAlmostEqual(intro0, 1.0)
+
+        self.assertFalse(state.handle_key("l", 11.1, renderer))
+        self.assertFalse(renderer.lights_on)
+        self.assertFalse(state.handle_key(" ", 11.2, renderer))
+        self.assertFalse(state.in_intro)
+        self.assertIsNone(state.advance(11.3)[1])
+
+        self.assertFalse(state.handle_key("r", 12.0, renderer))
+        self.assertTrue(state.in_intro)
+        self.assertTrue(state.handle_key("q", 12.1, renderer))
+        self.assertTrue(state.handle_key("escape", 12.2, renderer))
+
+    def test_gui_helpers_and_window_smoke(self) -> None:
+        self.assertEqual(compute_scale(1920, 1080, 116, 72, min_scale=4, max_scale=12), 12)
+        self.assertEqual(compute_scale(1000, 600, 116, 72, min_scale=4, max_scale=12), 8)
+        self.assertEqual(rgb_to_hex((14, 12, 255)), "#0e0cff")
+
+        r0 = [b"aaa", b"bbb", b"ccc", b"ddd"]
+        self.assertEqual(dirty_row_span(None, r0), (0, 4))
+        self.assertIsNone(dirty_row_span(r0, list(r0)))
+        r1 = [b"aaa", b"xbb", b"ccx", b"ddd"]
+        self.assertEqual(dirty_row_span(r0, r1), (1, 3))
+
+        try:
+            import tkinter as tk
+        except ImportError as exc:
+            self.skipTest(f"Tkinter unavailable in this environment: {exc}")
+
+        try:
+            root = tk.Tk()
+        except tk.TclError as exc:
+            self.skipTest(f"Tkinter display unavailable in this environment: {exc}")
+
+        root.withdraw()
+        renderer = LivingRoomRenderer(skip_intro=True)
+        window = LivingRoomWindow(root, renderer)
+        try:
+            window.render_step(1.25)
+            root.update_idletasks()
+            self.assertGreater(len(window._glyph_items), 20)
+            self.assertIsNotNone(window._prev_rows)
+            self.assertFalse(window._state.handle_key("l", 1.5, renderer))
+            window.render_step(1.5)
+            self.assertFalse(renderer.lights_on)
+        finally:
+            window.close()
 
 
 if __name__ == "__main__":

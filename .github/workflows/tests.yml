@@ -39,3 +39,4 @@ jobs:
         run: |
           python christmas.py --static --plain > /dev/null
           python christmas.py --static > /dev/null
+          python christmas_gui.py --help > /dev/null
