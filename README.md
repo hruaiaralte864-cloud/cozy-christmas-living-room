@@ -1,8 +1,16 @@
 # Cozy Christmas Living Room 🎄🔥🎁
 
+[![Tests](https://github.com/hruaiaralte864-cloud/cozy-christmas-living-room/actions/workflows/tests.yml/badge.svg)](https://github.com/hruaiaralte864-cloud/cozy-christmas-living-room/actions/workflows/tests.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 A **zero-dependency, 24-bit TrueColor Python terminal pixel-art animation** that builds a cozy Christmas living room directly in your terminal—featuring a brick hearth fireplace, Fair Isle stockings, Little Drummer Boy, wreath and snowglobe on the mantel, two-tier oak bookcase with an animated Slate-Teal retro radio, frosted night window with crescent moon and snowfall, wingback armchair with a tuxedo cat, decorated pine tree, and 9 wrapped presents resting on a Kilim wool rug.
 
 Inspired by procedural terminal pixel-art animations like *How Code Thinks*, built cleanly with a layered 2D sub-pixel buffer (`116 × 36` cells) so it runs smoothly inside **Antigravity IDE**, **VS Code**, **Windows Terminal**, **iTerm2**, or any modern terminal without opening a browser.
+
+| Full Cozy Evening (`lights_on = True`) | Midnight Hearth Glow (`[L]` Lights Off) |
+| :---: | :---: |
+| ![Cozy Christmas Living Room Lit](docs/preview-lit.png) | ![Cozy Christmas Living Room Hearth Glow](docs/preview-hearth.png) |
 
 ---
 
@@ -51,6 +59,11 @@ python christmas.py --static --plain  # Print plain ASCII without ANSI color cod
 
 ```text
 cozy-christmas-living-room/
+├── .github/workflows/
+│   └── tests.yml        # GitHub Actions CI matrix (Ubuntu & Windows, Python 3.10 / 3.12)
+├── docs/
+│   ├── preview-lit.png
+│   └── preview-hearth.png
 ├── christmas.py         # CLI entrypoint
 ├── scene/
 │   ├── canvas.py        # 2D TrueColor half-block sub-pixel buffer & Windows VT100 support
