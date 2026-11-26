@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cozy-christmas-living-room"
+version = "0.1.0"
+description = "Zero-dependency 24-bit TrueColor Python terminal and desktop pixel-art Christmas living room animation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.scripts]
+cozy-christmas = "christmas:main"
+cozy-christmas-gui = "christmas_gui:main"
+
+[tool.setuptools]
+py-modules = ["christmas", "christmas_gui"]
+packages = ["scene"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 145
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]

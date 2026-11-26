@@ -6,7 +6,7 @@
 
 A **zero-dependency, 24-bit TrueColor Python terminal pixel-art animation** that builds a cozy Christmas living room directly in your terminal—featuring a brick hearth fireplace, Fair Isle stockings, Little Drummer Boy, wreath and snowglobe on the mantel, two-tier oak bookcase with an animated Slate-Teal retro radio, frosted night window with crescent moon and snowfall, wingback armchair with a tuxedo cat, decorated pine tree, and 9 wrapped presents resting on a Kilim wool rug.
 
-Inspired by procedural terminal pixel-art animations like *How Code Thinks*, built cleanly with a layered 2D sub-pixel buffer (`116 × 36` cells) so it runs smoothly inside **Antigravity IDE**, **VS Code**, **Windows Terminal**, **iTerm2**, or any modern terminal without opening a browser.
+Inspired by procedural terminal pixel-art animations like *How Code Thinks*, built cleanly with a layered 2D sub-pixel buffer (`116 × 36` cells) so it runs smoothly inside **VS Code**, **Windows Terminal**, **iTerm2**, or any modern terminal/IDE without opening a browser.
 
 <p align="center">
   <img src="docs/preview.gif" alt="Cozy Christmas Living Room — Full Cozy Evening &amp; Midnight Hearth Glow" width="760">
@@ -51,7 +51,13 @@ cd cozy-christmas-living-room
 python christmas.py
 ```
 
-> **Tip for IDE Terminals (Antigravity / VS Code):** Maximize the terminal panel (or ensure it is at least `116 × 36` characters) for the full unclipped living room view.
+> **Tip for IDE Terminals:** Maximize the terminal panel (or ensure it is at least `116 × 36` characters) for the full unclipped living room view — or run `python christmas_gui.py` for the standalone window.
+
+Optional package install (exposes `cozy-christmas` and `cozy-christmas-gui` commands):
+
+```bash
+pip install .
+```
 
 ### Launch & CLI Options
 
@@ -93,6 +99,7 @@ cozy-christmas-living-room/
 ├── tests/
 │   └── test_scene.py    # Unit tests for canvas, build stages, GUI, idempotency & CLI parsing
 ├── LICENSE              # MIT License
+├── pyproject.toml       # PEP 621 package metadata, CLI scripts & Ruff lint config
 └── README.md
 ```
 

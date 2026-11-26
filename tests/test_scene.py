@@ -227,13 +227,15 @@ class TestLivingRoomScene(unittest.TestCase):
         try:
             window.render_step(1.25)
             root.update_idletasks()
-            self.assertGreater(len(window._glyph_items), 20)
-            self.assertIsNotNone(window._prev_rows)
-            self.assertFalse(window._state.handle_key("l", 1.5, renderer))
-            window.render_step(1.5)
+            self.assertGreater(window.glyph_count, 20)
+            self.assertTrue(window.has_rendered)
+            self.assertGreaterEqual(window.scale, 4)
+            self.assertFalse(window.handle_control("l", now=1.5))
             self.assertFalse(renderer.lights_on)
+            self.assertFalse(window.closed)
         finally:
             window.close()
+            self.assertTrue(window.closed)
 
 
 if __name__ == "__main__":

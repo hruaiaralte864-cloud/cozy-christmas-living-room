@@ -161,6 +161,26 @@ class LivingRoomWindow:
         root.bind("<Control-c>", lambda _evt: self.close())
         self._canvas.bind("<Configure>", self._on_configure)
 
+    @property
+    def closed(self) -> bool:
+        """Whether the window has been closed."""
+        return self._closed
+
+    @property
+    def scale(self) -> int:
+        """Current integer sub-pixel zoom factor."""
+        return self._scale
+
+    @property
+    def glyph_count(self) -> int:
+        """Number of active text-glyph overlay items on the canvas."""
+        return len(self._glyph_items)
+
+    @property
+    def has_rendered(self) -> bool:
+        """Whether at least one frame has been blitted to the PhotoImage buffer."""
+        return self._prev_rows is not None
+
     @staticmethod
     def _font_pixel_size(scale: int) -> int:
         """Compute negative pixel height so glyph labels fit inside a (scale x 2*scale) cell."""
@@ -186,6 +206,18 @@ class LivingRoomWindow:
             self._after_id = None
         self._root.destroy()
 
+    def handle_control(self, key: str | None, now: float | None = None) -> bool:
+        """Process a normalized control key; return True if the window closed."""
+        if self._closed:
+            return True
+        ts = time.monotonic() if now is None else now
+        if self._state.handle_key(key, ts, self._renderer):
+            self.close()
+            return True
+        if key in ("l", "r", " ", "\r", "\n"):
+            self.render_step(ts)
+        return False
+
     def _on_key(self, event: "tk.Event") -> None:
         if self._closed or (getattr(event, "state", 0) & 0x4):
             return
@@ -193,12 +225,7 @@ class LivingRoomWindow:
         key = _KEY_MAP.get(keysym)
         if key is None and event.char:
             key = event.char.lower()
-        now = time.monotonic()
-        if self._state.handle_key(key, now, self._renderer):
-            self.close()
-            return
-        if key in ("l", "r", " ", "\r", "\n"):
-            self.render_step(now)
+        self.handle_control(key)
 
     def _on_configure(self, event: "tk.Event") -> None:
         if self._closed or (event.width, event.height) == self._last_canvas_size:
