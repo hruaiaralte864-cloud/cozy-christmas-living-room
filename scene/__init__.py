@@ -1,4 +1,4 @@
-"""ASCII Christmas Living Room scene package."""
+"""Cozy Christmas Living Room scene package."""
 
 from .canvas import Canvas, Cell, enable_windows_ansi
 from .renderer import LivingRoomRenderer

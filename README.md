@@ -1,8 +1,8 @@
-# ASCII Christmas Living Room 🎄🔥🎁
+# Cozy Christmas Living Room 🎄🔥🎁
 
-A **zero-dependency, 24-bit TrueColor Python terminal animation** that builds a cozy Christmas living room directly in your terminal—featuring a brick hearth fireplace, Fair Isle stockings, Little Drummer Boy, wreath and snowglobe on the mantel, two-tier oak bookcase with an animated Slate-Teal retro radio, frosted night window with crescent moon and snowfall, wingback armchair with a tuxedo cat, decorated pine tree, and 9 wrapped presents resting on a Kilim wool rug.
+A **zero-dependency, 24-bit TrueColor Python terminal pixel-art animation** that builds a cozy Christmas living room directly in your terminal—featuring a brick hearth fireplace, Fair Isle stockings, Little Drummer Boy, wreath and snowglobe on the mantel, two-tier oak bookcase with an animated Slate-Teal retro radio, frosted night window with crescent moon and snowfall, wingback armchair with a tuxedo cat, decorated pine tree, and 9 wrapped presents resting on a Kilim wool rug.
 
-Inspired by procedural ASCII art animations like *How Code Thinks*, built cleanly with a layered 2D sub-pixel buffer (`116 × 36` cells) so it runs smoothly inside **Antigravity IDE**, **VS Code**, **Windows Terminal**, **iTerm2**, or any modern terminal without opening a browser.
+Inspired by procedural terminal pixel-art animations like *How Code Thinks*, built cleanly with a layered 2D sub-pixel buffer (`116 × 36` cells) so it runs smoothly inside **Antigravity IDE**, **VS Code**, **Windows Terminal**, **iTerm2**, or any modern terminal without opening a browser.
 
 ---
 
@@ -28,9 +28,9 @@ Inspired by procedural ASCII art animations like *How Code Thinks*, built cleanl
 Requires **Python 3.10+** (standard library only).
 
 ```bash
-git clone https://github.com/hruaiaralte864-cloud/ascii-christmas-living-room.git
-cd ascii-christmas-living-room
-python main.py
+git clone https://github.com/hruaiaralte864-cloud/cozy-christmas-living-room.git
+cd cozy-christmas-living-room
+python christmas.py
 ```
 
 > **Tip for IDE Terminals (Antigravity / VS Code):** Maximize the terminal panel (or ensure it is at least `116 × 36` characters) for the full unclipped living room view.
@@ -38,11 +38,11 @@ python main.py
 ### CLI Options
 
 ```bash
-python main.py --no-intro        # Jump straight into the cozy animated loop
-python main.py --speed 2.0       # Play the build-up animation 2x faster
-python main.py --fps 24          # Adjust frame rate (default: 30)
-python main.py --static          # Print one full TrueColor frame and exit
-python main.py --static --plain  # Print plain ASCII without ANSI color codes
+python christmas.py --no-intro        # Jump straight into the cozy animated loop
+python christmas.py --speed 2.0       # Play the build-up animation 2x faster
+python christmas.py --fps 24          # Adjust frame rate (default: 30)
+python christmas.py --static          # Print one full TrueColor frame and exit
+python christmas.py --static --plain  # Print plain ASCII without ANSI color codes
 ```
 
 ---
@@ -50,8 +50,8 @@ python main.py --static --plain  # Print plain ASCII without ANSI color codes
 ## Project Structure
 
 ```text
-ascii-christmas-living-room/
-├── main.py              # CLI entrypoint
+cozy-christmas-living-room/
+├── christmas.py         # CLI entrypoint
 ├── scene/
 │   ├── canvas.py        # 2D TrueColor half-block sub-pixel buffer & Windows VT100 support
 │   ├── palette.py       # Festive RGB color palette, interpolation & hash utilities

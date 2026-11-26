@@ -1,4 +1,4 @@
-"""CLI entrypoint for the ASCII Christmas Living Room terminal animation."""
+"""CLI entrypoint for the Cozy Christmas Living Room terminal animation."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from scene import LivingRoomRenderer, enable_windows_ansi
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command-line options for running or previewing the scene."""
     parser = argparse.ArgumentParser(
-        prog="ascii-christmas-living-room",
-        description="Animated 24-bit TrueColor ASCII Christmas living room for your terminal.",
+        prog="cozy-christmas-living-room",
+        description="Animated 24-bit TrueColor pixel-art Christmas living room for your terminal.",
     )
     parser.add_argument(
         "--fps",

@@ -5,7 +5,7 @@ from __future__ import annotations
 import unittest
 import unicodedata
 
-from main import parse_args
+from christmas import parse_args
 from scene.canvas import Canvas
 from scene.presents import DEFAULT_PRESENTS
 from scene.renderer import LivingRoomRenderer
